@@ -9,14 +9,15 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-'//////////////////////////////////////////////////////////////////////
-'/////////////// Класс объединяющий элементы управления ///////////////
-'//////////////////////////////////////////////////////////////////////
+'//////////////////////////////////////////////////////////////////////////////////
+'/////////////// Controller-class, to manage multiple form-controls ///////////////
+'//////////////////////////////////////////////////////////////////////////////////
 
-Private pElements As Collection '//Коллекция контролов.
+Private pElements As Collection '//
 
 Public Sub PassControls(ParamArray Controls() As Variant)
-'//Метод, инициализирующий объект Controller. Не работает, если объект уже был инициализирован.
+'// Gatheres control inside Controller instance.
+'// This method can be used once to initialize Controller
     
     Dim Ctrl As Variant
     Dim i%
@@ -24,18 +25,18 @@ Public Sub PassControls(ParamArray Controls() As Variant)
     
     If Not pElements Is Nothing Then
         Debug.Print "Controls are already passed"
-        Exit Sub
+        Exit Sub '// Exiting sub if Controller-instance is already initialized.
     End If
     
     Set pElements = New Collection
 
     For Each Ctrl In Controls
     
-        Set Wrapper = New clsWrapper '// Создаём "обёртку"
-        Set Wrapper.Control = Ctrl   '// Заворачиваем элемент управления
-        Set Wrapper.Controller = Me  '// Указываем управляющий объект - текущий экземпляр класса clsController
+        Set Wrapper = New clsWrapper '// Initializing new instance of Wrapper-object
+        Set Wrapper.Control = Ctrl   '// Wrapping up control
+        Set Wrapper.Controller = Me  '// Setting up Controller-object witch contains event handlers
         
-        pElements.Add Wrapper '// Добавляем "завёрнутый" элемент в коллекцию
+        pElements.Add Wrapper '// Adding wrapped up control to collection
         
         Set Wrapper = Nothing
     Next
@@ -43,10 +44,11 @@ Public Sub PassControls(ParamArray Controls() As Variant)
 End Sub
 
 '/////////////////////////////////////////////////////////
-'/////////////// Обработчики событий /////////////////////
+'//////////////////// Event hanlders /////////////////////
 '/////////////////////////////////////////////////////////
 
-'// Список передаваемых параметров может быть любой
+'// This functions can take any kind of parameter. The only important thing is that this functions must be
+'// correctly linked with functions in Wrapper-class
 
 Public Sub MyEvent1(ByRef W As clsWrapper)
     MsgBox (W.Control.name & " fired MyEvent1!")
